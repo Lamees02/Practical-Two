@@ -17,6 +17,7 @@ library(iterators)
 library(knitr)
 
 ```
+[GitHub Link](https://github.com/Lamees02/Practical-Two)
 
 # Question 1
 

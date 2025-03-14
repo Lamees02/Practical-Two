@@ -2,7 +2,6 @@ project:
   type: website
   output-dir: _site  
   render:
-    - index.qmd
     - PracticalTwo.qmd
 
 book:
@@ -20,7 +19,6 @@ book:
         href: https://github.com/Lamees02/Practical-Two
 
   chapters:
-    - index.qmd
     - PracticalTwo.qmd
 
 format:

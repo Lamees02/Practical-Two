@@ -1,0 +1,43 @@
+project:
+  title: "Parallel Computing Practical"
+  author: "Lamees Moola MLXLAM001"
+  date: 14-03-2025
+  type: website
+  output-dir: _site  
+  render:
+    - index.qmd
+    - PracticalTwo.qmd
+
+book:
+  title: "Statistical Computing"
+  sidebar:
+    border: true
+    background: light
+    position: left
+    collapse-level: 2
+  navbar:
+    background: primary
+    search: true
+    right:
+      - icon: github
+        href: https://github.com/Lamees02/Practical-Two
+
+  chapters:
+    - index.qmd
+    - PracticalTwo.qmd
+
+format:
+  html:
+    theme: flatly  
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: true 
+    code-overflow: wrap 
+    css: styles.css 
+    
+  
+
+
+

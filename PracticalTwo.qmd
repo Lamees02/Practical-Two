@@ -1,0 +1,147 @@
+---
+title: "Parallel Computing Practical"
+author: "Lamees Moola MLXLAM001"
+output: html
+---
+
+```{r}
+#| echo: false
+#| results: "hide"
+#| message: false
+#| warning: false
+
+library(foreach)
+library(MASS)
+library(doParallel)
+library(iterators)
+library(knitr)
+
+```
+
+# Question 1
+
+
+```{r}
+
+num_it <- 100
+
+results <- foreach(i = 1:num_it, .combine = rbind) %do% {
+  sample <- rexp(100, rate = 1) 
+  
+  sample_mean <- mean(sample)
+  sample_var <- var(sample)
+  
+  c(sample_mean, sample_var)
+}
+
+results <- as.data.frame(results)
+colnames(results) <- c("Mean", "Variance")
+
+kable(head(round(results, 3)))
+
+```
+
+# Question 2 
+```{r}
+
+data(galaxies)
+
+num_samples <- 10000
+
+num_cores <- detectCores() - 1  
+
+cl <- makeCluster(num_cores)
+registerDoParallel(cl)
+
+system.time({
+  results_parallel <- foreach(i = 1:num_samples, .combine = c, .packages = 'MASS') %dopar% {
+    sample_data <- sample(galaxies, replace = TRUE)
+    median(sample_data)
+  }
+})
+
+stopCluster(cl)
+
+system.time({
+  results_serial <- foreach(i = 1:num_samples, .combine = c) %do% {
+    sample_data <- sample(galaxies, replace = TRUE)
+    median(sample_data)
+  }
+})
+
+
+
+```
+
+# Question 3
+```{r}
+
+bootstrap_ci <- function(sample_data, B = 1000, alpha = 0.05) {
+  boot_medians <- replicate(B, median(sample(sample_data, replace = TRUE)))  
+  quantile(boot_medians, probs = c(alpha/2, 1 - alpha/2))  # 95% CI
+}
+
+true_median <- log(2) 
+
+num_simulations <- 1000
+sample_size <- 50 
+
+coverage_results <- foreach(i = 1:num_simulations, .combine = c) %do% {
+  sample_data <- rexp(sample_size, rate = 1) 
+  ci <- bootstrap_ci(sample_data) 
+  (ci[1] <= true_median) & (ci[2] >= true_median) 
+}
+
+coverage_probability <- round(mean(coverage_results), 4)
+cat("Estimated Coverage Probability:", coverage_probability)
+
+```
+
+# Question 4
+
+```{r}
+
+set.seed(1234)
+
+iter <- irnorm(n = 5, mean = 0, sd = 1)  
+
+largest_values <- foreach(i = 1:3, .combine = c) %do% {
+  max(nextElem(iter)) 
+}
+
+
+cat(round(largest_values, 3) , sep = " ")
+
+```
+
+# Question 5
+
+```{r}
+task <- function() {
+  max(rnorm(5))
+}
+
+B <- 1000
+
+cl <- makeCluster(detectCores() - 1)
+registerDoParallel(cl)
+
+clusterExport(cl, varlist = c("task"))  
+system.time({
+  par_result <- parLapply(cl, 1:B, function(i) task())
+})
+
+system.time({
+  foreach_result <- foreach(i = 1:B, .combine = c) %dopar% {
+    task()
+  }
+})
+
+system.time({
+  replicate_result <- replicate(B, task())
+})
+
+stopCluster(cl)
+
+```
+

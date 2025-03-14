@@ -1,7 +1,4 @@
 project:
-  title: "Parallel Computing Practical"
-  author: "Lamees Moola MLXLAM001"
-  date: 14-03-2025
   type: website
   output-dir: _site  
   render:
